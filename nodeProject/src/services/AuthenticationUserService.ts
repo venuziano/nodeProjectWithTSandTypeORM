@@ -4,6 +4,7 @@ import { sign } from 'jsonwebtoken';
 
 import User from '../models/User';
 import AuthConfig from '../config/auth';
+import AppError from '../error/AppError';
 
 interface Request {
   email: string;
@@ -22,13 +23,13 @@ class AutheticationUserService {
     const user = await userRepository.findOne({ where: { email } });
 
     if (!user) {
-      throw new Error('Invalid email/password, try again.');
+      throw new AppError('Invalid email/password, try again.', 401);
     };
 
     const passwordMatched = await compare(password, user.password);
 
     if (!passwordMatched) {
-      throw new Error('Invalid email/password, try again.');
+      throw new AppError('Invalid email/password, try again.', 401);
     };
 
     const { secret, expiresIn } = AuthConfig.jwt;
